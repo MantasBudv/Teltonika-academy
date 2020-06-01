@@ -7,7 +7,7 @@ export default function App() {
   const [countries, setCountries] = useState({});
   return (
     <Router>
-      <div className="notFooter">
+      <div className="all-screen">
         <Header />
         <Switch>
           <Route path="/" exact component={Countries}/>

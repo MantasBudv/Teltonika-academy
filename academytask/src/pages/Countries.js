@@ -9,6 +9,7 @@ import editButton from '../images/edit.png';
 function Countries() {
     const [countries, setCountries] = useState([]);
     const [needsUpdate, setNeedsUpdate] = useState(true);
+    const [needsAdd, setNeedsAdd] = useState(false);
 
 
     useEffect(() => {
@@ -24,10 +25,18 @@ function Countries() {
         setNeedsUpdate(false);
       }, [needsUpdate]);
 
-
-
-
     const handleRedirect = () => {
+        
+    }
+    const handleAdd = () => {
+        console.log("Background is white");
+        return (
+            <div className="all-screen__whiteBackground">
+                <div className="all-screen__whiteBackground__addCountry rectangle">
+                
+                </div>
+            </div>
+        );
         
     }
     const handleDelete = (id) => {
@@ -45,6 +54,7 @@ function Countries() {
         
     }
 
+
     return (
         <div className="Page">
 
@@ -52,10 +62,14 @@ function Countries() {
                 <div className="Page__intro__title">
                     Šalys
                 </div>  
-                <a className="Page__intro__add" onClick={ () => { handleRedirect('/') } }>
+                <a className="Page__intro__add" onClick={ () => { setNeedsAdd(true) } }>
                     <img src={addButton} alt="Logo" className="add-button"/>
                 </a>
             </div>
+            {
+                needsAdd && 
+                    handleAdd()
+            }
 
             <div className="Page__SearchNav flex-row">
                 <div className="Page__SearchNav__inputWrapper flex-row rectangle">
