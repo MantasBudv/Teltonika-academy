@@ -136,9 +136,15 @@
       &__options {
         padding: 15px 0;
         width: 20%;
+        background: linear-gradient(#969696, #969696) no-repeat center/1px 60%;
         &__item {
-          width: 50%;
-          padding: 0 22px;
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+          margin: 0 auto;
+          &:hover {
+            filter: invert(88%) sepia(100%) saturate(1000%) hue-rotate(200deg) brightness(105%) contrast(109%);
+          }
         }
       }
     }
@@ -159,9 +165,6 @@
       line-height: 27px;
       /* identical to box height */
       letter-spacing: 0.016em;
-    }
-    .right-border {
-      border-right: 1px solid #969696;
     }
   }
 }
