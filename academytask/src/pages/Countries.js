@@ -10,6 +10,9 @@ function Countries() {
     const [countries, setCountries] = useState([]);
     const [needsUpdate, setNeedsUpdate] = useState(true);
     const [needsAdd, setNeedsAdd] = useState(false);
+    const [needsEdit, setNeedsEdit] = useState(false);
+    const [editDataFetched, setEditDataFetched] = useState(false);
+    const [editID, setEditID] = useState(0);
     const [name, setName] = useState(''); 
     const [area, setArea] = useState(0); 
     const [population, setPopulation] = useState(0);
@@ -79,6 +82,61 @@ function Countries() {
         postData().then(setNeedsAdd(false)).then(setNeedsUpdate(true));
     }
 
+    const handleEdit = () => {
+        if (!editDataFetched) {
+            const fetchData = async () => {
+                const result = await axios.get(
+                `https://akademija.teltonika.lt/api1/countries/${editID}`,
+                );
+                setName(result.data.name); setArea(result.data.area); setPopulation(result.data.population); setCalling_code(result.data.calling_code);
+            };
+            fetchData().then(setEditDataFetched(true));
+        }
+        return (
+            <div className="all-screen__whiteBackground">
+                <div className="all-screen__whiteBackground__addCountry rectangle">
+                    <div className="all-screen__whiteBackground__addCountry__title">
+                        PRIDĖTI ŠALĮ
+                    </div>
+
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Pavadinimas</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" value={name} onChange={ (e) => setName(e.target.value)}/>
+                    </fieldset>
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Užimamas plotas</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" value={area} onChange={ (e) => setArea(e.target.value)}/>
+                    </fieldset>
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Gyventojų skaičius</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" value={population} onChange={ (e) => setPopulation(e.target.value)}/>
+                    </fieldset>
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Šalies Tel. kodas</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" value={calling_code} onChange={ (e) => setCalling_code(e.target.value)}/>
+                    </fieldset>
+
+                    <a className="all-screen__whiteBackground__addCountry__submit rectangle" onClick={handleEditSubmit}>
+                        <div className="all-screen__whiteBackground__addCountry__submit__text">
+                            Saugoti
+                        </div>
+                    </a>
+                </div>
+            </div>
+        );
+    }
+    const handleEditSubmit = () => {
+        const postData = async () => {
+            const result = await axios.put(
+            `https://akademija.teltonika.lt/api1/countries/${editID}`, newCountry(name,area,population,calling_code)
+            );
+  
+            console.log(result.data.message);
+        };
+       
+        postData().then(setNeedsEdit(false)).then(setEditDataFetched(false)).then(setNeedsUpdate(true));
+    }
+
     const newCountry = (name, area, population, calling_code) => {
         let country = {
             name: name,
@@ -100,9 +158,7 @@ function Countries() {
        
         fetchData().then(setNeedsUpdate(true));
     }
-    const handleEdit = (id) => {
-        
-    }
+    
 
     
 
@@ -179,7 +235,7 @@ function Countries() {
                                     <a className="Page__CountriesContainer__row__options__item" onClick={ () => { handleDelete(country.id) } }>
                                         <img src={trashButton} alt="trash Button"/>
                                     </a>
-                                    <a className="Page__CountriesContainer__row__options__item" onClick={ () => { handleEdit(country.id) } }>
+                                    <a className="Page__CountriesContainer__row__options__item" onClick={ () => { setNeedsEdit(true);  setEditID(country.id); } }>
                                         <img src={editButton} alt="edit Button"/>
                                     </a>     
                                 </p>
@@ -188,6 +244,9 @@ function Countries() {
                     })
                 }
             </div>
+            {
+                needsEdit && handleEdit()
+            }
         </div>
         );
     }
