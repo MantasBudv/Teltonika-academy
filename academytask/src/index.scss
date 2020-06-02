@@ -218,12 +218,24 @@
         }
       }
       &__submit {
+        position: absolute;
+        right: 46px;
         width: 92px;
         height: 40px;
         cursor: pointer;
+        &:hover {
+          background-color: rgba(95, 95, 95, 0.1);
+        }
         &__text {
-          width: 100%;
+          width: 61px;
           height: 100%;
+          font-family: "Oswald";
+          font-size: 14px;
+          line-height: 40px;
+          letter-spacing: 0.016em;
+          text-transform: uppercase;
+          color: #969696;
+          margin: 0 auto;
         }
       }
     }

@@ -10,6 +10,10 @@ function Countries() {
     const [countries, setCountries] = useState([]);
     const [needsUpdate, setNeedsUpdate] = useState(true);
     const [needsAdd, setNeedsAdd] = useState(false);
+    const [name, setName] = useState(''); 
+    const [area, setArea] = useState(0); 
+    const [population, setPopulation] = useState(0);
+    const [calling_code, setCalling_code] = useState('');
 
 
     useEffect(() => {
@@ -29,7 +33,6 @@ function Countries() {
         
     }
     const handleAdd = () => {
-        console.log("Background is white");
         return (
             <div className="all-screen__whiteBackground">
                 <div className="all-screen__whiteBackground__addCountry rectangle">
@@ -39,33 +42,53 @@ function Countries() {
 
                     <fieldset className="all-screen__whiteBackground__addCountry__field">
                         <legend className="all-screen__whiteBackground__addCountry__field__legend">Pavadinimas</legend>
-                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" onChange={ (e) => setName(e.target.value)} required/>
                     </fieldset>
                     <fieldset className="all-screen__whiteBackground__addCountry__field">
                         <legend className="all-screen__whiteBackground__addCountry__field__legend">Užimamas plotas</legend>
-                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" onChange={ (e) => setArea(e.target.value)}/>
                     </fieldset>
                     <fieldset className="all-screen__whiteBackground__addCountry__field">
                         <legend className="all-screen__whiteBackground__addCountry__field__legend">Gyventojų skaičius</legend>
-                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" onChange={ (e) => setPopulation(e.target.value)}/>
                     </fieldset>
                     <fieldset className="all-screen__whiteBackground__addCountry__field">
                         <legend className="all-screen__whiteBackground__addCountry__field__legend">Šalies Tel. kodas</legend>
-                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text" onChange={ (e) => setCalling_code(e.target.value)}/>
                     </fieldset>
 
-                    <a className="all-screen__whiteBackground__addCountry__submit rectangle" onClick={ () => { handleSubmit() } }>
+                    <a className="all-screen__whiteBackground__addCountry__submit rectangle" onClick={handleAddSubmit}>
                         <div className="all-screen__whiteBackground__addCountry__submit__text">
                             Saugoti
                         </div>
-                    </a>  
+                    </a>
                 </div>
             </div>
         );
     }
-    const handleSubmit = () => {
 
+    const handleAddSubmit = () => {
+        const postData = async () => {
+            const result = await axios.post(
+            `https://akademija.teltonika.lt/api1/countries`, newCountry(name,area,population,calling_code)
+            );
+  
+            console.log(result.data.message);
+        };
+       
+        postData().then(setNeedsAdd(false)).then(setNeedsUpdate(true));
     }
+
+    const newCountry = (name, area, population, calling_code) => {
+        let country = {
+            name: name,
+            area: area,
+            population: population,
+            calling_code: calling_code
+        }
+        return country;
+    }
+
     const handleDelete = (id) => {
         const fetchData = async () => {
             const result = await axios.delete(
@@ -75,11 +98,13 @@ function Countries() {
             console.log(result.data.message);
         };
        
-        fetchData();
+        fetchData().then(setNeedsUpdate(true));
     }
-    const handleEdit = () => {
+    const handleEdit = (id) => {
         
     }
+
+    
 
 
     return (
@@ -90,7 +115,7 @@ function Countries() {
                     Šalys
                 </div>  
                 <a className="Page__intro__add" onClick={ () => { setNeedsAdd(true) } }>
-                    <img src={addButton} alt="Logo" className="add-button"/>
+                    <img src={addButton} alt="Add Button" className="add-button"/>
                 </a>
             </div>
             {
