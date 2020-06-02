@@ -33,11 +33,38 @@ function Countries() {
         return (
             <div className="all-screen__whiteBackground">
                 <div className="all-screen__whiteBackground__addCountry rectangle">
-                
+                    <div className="all-screen__whiteBackground__addCountry__title">
+                        PRIDĖTI ŠALĮ
+                    </div>
+
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Pavadinimas</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                    </fieldset>
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Užimamas plotas</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                    </fieldset>
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Gyventojų skaičius</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                    </fieldset>
+                    <fieldset className="all-screen__whiteBackground__addCountry__field">
+                        <legend className="all-screen__whiteBackground__addCountry__field__legend">Šalies Tel. kodas</legend>
+                        <input className="all-screen__whiteBackground__addCountry__field__input" type="text"/>
+                    </fieldset>
+
+                    <a className="all-screen__whiteBackground__addCountry__submit rectangle" onClick={ () => { handleSubmit() } }>
+                        <div className="all-screen__whiteBackground__addCountry__submit__text">
+                            Saugoti
+                        </div>
+                    </a>  
                 </div>
             </div>
         );
-        
+    }
+    const handleSubmit = () => {
+
     }
     const handleDelete = (id) => {
         const fetchData = async () => {
