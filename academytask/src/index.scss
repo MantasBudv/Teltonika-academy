@@ -202,10 +202,10 @@
         width: 100%;
         margin: 0 auto 26px auto;
         &__input {
-          width: 100%;
+          width: calc(100% - 20px);
           outline: none;
           border: 0;
-          padding-left: 10px;
+          margin: 0 10px;
         }
         &__legend {
           margin-left: 26px;

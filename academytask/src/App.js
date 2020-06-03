@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Header from './pages/Header';
 import Countries from './pages/Countries';
+import AddCountry from './pages/AddCountry';
 
 export default function App() {
   const [countries, setCountries] = useState({});
