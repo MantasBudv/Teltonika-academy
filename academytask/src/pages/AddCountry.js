@@ -17,6 +17,9 @@ function AddCountry({setNeedsAdd, setNeedsUpdate}) {
             console.log(result.data.message);
         };
        
+        /*for (let i = 0; i < 40; i++) {
+            postData(); //adds bunch of data for testing purposes
+        }*/
         postData().then(setNeedsAdd).then(setNeedsUpdate);
     }
 
