@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router';
 import axios from 'axios';
-import AddCountry from './AddCountry';
-import EditCountry from './EditCountry';
+import AddCity from './AddCity';
+import EditCity from './EditCity';
 import Paginate from './Paginate';
 import addButton from '../images/addButton.png';
 import searchButton from '../images/searchButton.png';
@@ -12,8 +12,8 @@ import topArrow from '../images/topArrow.png';
 import downArrow from '../images/downArrow.png';
 //https://akademija.teltonika.lt/api1/
 
-function Countries( {history, countryToView} ) {
-    const [countries, setCountries] = useState([]);
+function CountryView( {history, countryID, countryName} ) {
+    const [cities, setCities] = useState([]);
     const [creationDates, setCreationDates] = useState([]);
     const [isDatesAdded, setIsDatesAdded] = useState(false);
     const [needsUpdate, setNeedsUpdate] = useState(false);
@@ -31,10 +31,9 @@ function Countries( {history, countryToView} ) {
     useEffect(() => {
         const fetchData = async () => {
           const result = await axios.get(
-            `https://akademija.teltonika.lt/api1/countries?page=${currentPage}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
+            `https://akademija.teltonika.lt/api1/cities/${countryID}?page=${currentPage}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
           );
-
-          setCountries([...result.data.countires]);
+          setCities(result.data);
         };
         // counts pageCount and all possible dates
         let counter = 0;
@@ -44,13 +43,13 @@ function Countries( {history, countryToView} ) {
             let update = true;
             while (update) {
                 moreResult = await axios.get(
-                    `https://akademija.teltonika.lt/api1/countries?page=${counter + 1}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
+                    `https://akademija.teltonika.lt/api1/cities/${countryID}?page=${counter + 1}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
                 );
                 // gets all possible creation dates
                 if (isDatesAdded === false) {
                     // eslint-disable-next-line no-loop-func
-                    [...moreResult.data.countires].forEach((country) => {
-                        let date = country.created_at;
+                    moreResult.data.forEach((city) => {
+                        let date = city.created_at;
                         date = date.substr(0, date.indexOf(' '));
                         if (dates.includes(date) === false) {
                             dates.push(date);
@@ -59,7 +58,7 @@ function Countries( {history, countryToView} ) {
                 }
                 //---------------------------------
                 // counts pages
-                if (await moreResult.data.count > 0) {
+                if (await moreResult.data.length > 0) {
                     counter += 1;
                 } else {
                     update = false;
@@ -87,15 +86,15 @@ function Countries( {history, countryToView} ) {
         let caught = false;
         const fetchData = async () => {
             const result = await axios.delete(
-            `https://akademija.teltonika.lt/api1/countries/${id}`,
+            `https://akademija.teltonika.lt/api1/cities/${id}`,
             ).catch((e) => {alert("Country was not added, check if table is filled correctly."); caught = true;});
             if(caught === false && await result.status === 200) {
                 alert(result.data.message);
 
                 const moreResult = await axios.get(
-                    `https://akademija.teltonika.lt/api1/countries?page=${currentPage}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
+                    `https://akademija.teltonika.lt/api1/cities/${countryID}?page=${currentPage}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
                 );
-                if (moreResult.data.count === 0) {
+                if (moreResult.data.length === 0) {
                     setCurrentPage(1);
                     setIsDatesAdded(false);
                     setDateFilter('DATE FILTER');
@@ -104,7 +103,6 @@ function Countries( {history, countryToView} ) {
                 setNeedsUpdate(true);
             }
         };
-       
         fetchData();
     }
 
@@ -115,10 +113,9 @@ function Countries( {history, countryToView} ) {
     
     return (
         <div className="Page">
-
             <div className="Page__intro flex-row">
                 <div className="Page__intro__title">
-                    Šalys
+                    {countryName}
                 </div>  
                 <a className="Page__intro__add" onClick={ () => { setNeedsAdd(true); } }>
                     <img src={addButton} alt="Add Button" className="add-button"/>
@@ -166,35 +163,33 @@ function Countries( {history, countryToView} ) {
                         GYVENTOJŲ SKAIČIUS
                     </div>
                     <div className="Page__CountriesContainer__row__text colTitle">
-                        šALIES TEL. KODAS
+                        miesto pašto KODAS
                     </div>
                     <div className="Page__CountriesContainer__row__text last colTitle">
-                        veiksmai
+                        EDIT
                     </div>
                 </div>
                 {
-                    countries.map((country) => {
+                    cities.map((city) => {
                         return (
-                            <div className="Page__CountriesContainer__row flex-row" key={country.id}>
+                            <div className="Page__CountriesContainer__row flex-row" key={city.id}>
                                 <p className="Page__CountriesContainer__row__text first">
-                                    <a className="Page__CountriesContainer__row__text__country" onClick={ () => { countryToView(country.id, country.name); handleRedirect("/CountryView"); } }>
-                                        {country.name}
-                                    </a>
+                                    {city.name}
                                 </p>
                                 <p className="Page__CountriesContainer__row__text">
-                                    {country.area}
+                                    {city.area}
                                 </p>
                                 <p className="Page__CountriesContainer__row__text">
-                                    {country.population}
+                                    {city.population}
                                 </p>
                                 <p className="Page__CountriesContainer__row__text">
-                                    {country.calling_code}
+                                    {city.postcode}
                                 </p>
                                 <p className="Page__CountriesContainer__row__options last flex-row">
-                                    <a className="Page__CountriesContainer__row__options__item" onClick={ () => { handleDelete(country.id) } }>
+                                    <a className="Page__CountriesContainer__row__options__item" onClick={ () => { handleDelete(city.id) } }>
                                         <img src={trashButton} alt="trash Button"/>
                                     </a>
-                                    <a className="Page__CountriesContainer__row__options__item" onClick={ () => { setEditID(country.id); setNeedsEdit(true); } }>
+                                    <a className="Page__CountriesContainer__row__options__item" onClick={ () => { setEditID(city.id); setNeedsEdit(true); } }>
                                         <img src={editButton} alt="edit Button"/>
                                     </a>     
                                 </p>
@@ -205,14 +200,14 @@ function Countries( {history, countryToView} ) {
             </div>
             {
                 needsAdd && 
-                    <AddCountry setNeedsAdd={() => setNeedsAdd(false)} setNeedsUpdate={() => setNeedsUpdate(true)} setIsDatesAdded={() => setIsDatesAdded(false)} />                    
+                    <AddCity setNeedsAdd={() => setNeedsAdd(false)} setNeedsUpdate={() => setNeedsUpdate(true)} setIsDatesAdded={() => setIsDatesAdded(false)} countryID={countryID} />                    
             }
             {
                 needsEdit && 
-                    <EditCountry setNeedsEdit={() => setNeedsEdit(false)} setNeedsUpdate={() => setNeedsUpdate(true)} editID={editID}/>
+                    <EditCity setNeedsEdit={() => setNeedsEdit(false)} setNeedsUpdate={() => setNeedsUpdate(true)} editID={editID} countryID={countryID}/>
             }
             <Paginate currentPage={currentPage} nextPage={nextPage} pageCount={pageCount}/>
         </div>
         );
     }
-export default withRouter(Countries);
+export default withRouter(CountryView);

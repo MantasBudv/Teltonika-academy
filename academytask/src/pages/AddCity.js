@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 //https://akademija.teltonika.lt/api1/
 
-function AddCountry({setNeedsAdd, setNeedsUpdate, setIsDatesAdded}) {
+function AddCity({setNeedsAdd, setNeedsUpdate, setIsDatesAdded, countryID}) {
     const [name, setName] = useState(''); 
     const [area, setArea] = useState(0); 
     const [population, setPopulation] = useState(0);
-    const [calling_code, setCalling_code] = useState('');
+    const [postcode, setPostcode] = useState('');
 
     const handleAddSubmit = () => {
         let caught = false;
         const postData = async () => {
             const result = await axios.post(
-            `https://akademija.teltonika.lt/api1/countries`, newCountry(name,area,population,calling_code)
+            `https://akademija.teltonika.lt/api1/cities`, newCity(name,area,population,postcode)
             ).catch((e) => {alert("Country was not added, check if table is filled correctly."); caught = true;});
             if(caught === false && await result.status === 200) {
                 alert(result.data.message);
@@ -24,14 +24,15 @@ function AddCountry({setNeedsAdd, setNeedsUpdate, setIsDatesAdded}) {
         postData();
     }
 
-    const newCountry = (name, area, population, calling_code) => {
-        let country = {
+    const newCity = (name, area, population, postcode) => {
+        let city = {
             name: name,
             area: area,
             population: population,
-            calling_code: calling_code
+            postcode: postcode,
+            country_id: countryID
         }
-        return country;
+        return city;
     }
     return (
         <div className="all-screen__whiteBackground">
@@ -53,8 +54,8 @@ function AddCountry({setNeedsAdd, setNeedsUpdate, setIsDatesAdded}) {
                     <input className="all-screen__whiteBackground__addCountry__field__input" type="text" onChange={ (e) => setPopulation(e.target.value)}/>
                 </fieldset>
                 <fieldset className="all-screen__whiteBackground__addCountry__field">
-                    <legend className="all-screen__whiteBackground__addCountry__field__legend">Šalies Tel. kodas</legend>
-                    <input className="all-screen__whiteBackground__addCountry__field__input" type="text" onChange={ (e) => setCalling_code(e.target.value)}/>
+                    <legend className="all-screen__whiteBackground__addCountry__field__legend">Miesto pašto kodas</legend>
+                    <input className="all-screen__whiteBackground__addCountry__field__input" type="text" onChange={ (e) => setPostcode(e.target.value)}/>
                 </fieldset>
 
                 <a className="all-screen__whiteBackground__addCountry__submit rectangle" onClick={handleAddSubmit}>
@@ -66,4 +67,4 @@ function AddCountry({setNeedsAdd, setNeedsUpdate, setIsDatesAdded}) {
         </div>
     );
     }
-export default AddCountry;
+export default AddCity;

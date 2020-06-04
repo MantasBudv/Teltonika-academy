@@ -110,19 +110,25 @@
       }
     }
     &__selectWrap {
-      width: 161px;
+      width: 16%;
       height: 49px;
+      padding: 12px 22px 16px 22px;
       &__select {
-        margin: 12px 37px 16px 22px;
-        width: 102px;
+        cursor: pointer;
+        margin: 0 auto;
+        width: 100%;
         height: 21px;       
         outline: none;
         border: 0;
         font-family: "Oswald";
-        font-size: 18px;
+        font-size: 16px;
         line-height: 27px;
         letter-spacing: 0.016em;
         text-transform: uppercase;
+        color: #969696;
+        &__option {
+          color: #969696;
+        }
       }
     }
   }
@@ -155,6 +161,9 @@
               position: absolute;
             }
           }
+        }
+        &__country {
+          cursor: pointer;
         }
       }
       &__options {
