@@ -9,11 +9,22 @@ function EditCity({setNeedsEdit, setNeedsUpdate, editID, countryID}) {
     const [postcode, setPostcode] = useState('');
 
     useEffect(() => {
+        let counter = 0;
         const fetchData = async () => {
-            const result = await axios.get(
-            `https://akademija.teltonika.lt/api1/countries/${editID}`,
-            );
-            setName(result.data.name); setArea(result.data.area); setPopulation(result.data.population); setPostcode(result.data.postcode);
+            let update = true;
+            while (update) {
+                const result = await axios.get(
+                    `https://akademija.teltonika.lt/api1/cities/${countryID}?page=${counter + 1}`,
+                );
+                // eslint-disable-next-line no-loop-func
+                result.data.forEach( (e) => {
+                    if (e.id === editID) {
+                        setName(e.name); setArea(e.area); setPopulation(e.population); setPostcode(e.postcode);
+                        update = false;
+                    }
+                });
+                counter++;
+            }
         };
         fetchData();
       }, []);
@@ -33,7 +44,7 @@ function EditCity({setNeedsEdit, setNeedsUpdate, editID, countryID}) {
         let caught = false;
         const putData = async () => {
             const result = await axios.put(
-            `https://akademija.teltonika.lt/api1/countries/${editID}`, newCity(name,area,population,postcode)
+            `https://akademija.teltonika.lt/api1/cities/${editID}`, newCity(name,area,population,postcode)
             ).catch((e) => {alert("Country was not added, check if table is filled correctly."); caught = true;});
   
             if(caught === false && await result.status === 200) {
