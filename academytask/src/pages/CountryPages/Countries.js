@@ -3,13 +3,13 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 import AddCountry from './AddCountry';
 import EditCountry from './EditCountry';
-import Paginate from './Paginate';
-import addButton from '../images/addButton.png';
-import searchButton from '../images/searchButton.png';
-import trashButton from '../images/trash.png';
-import editButton from '../images/edit.png';
-import topArrow from '../images/topArrow.png';
-import downArrow from '../images/downArrow.png';
+import Paginate from '../Paginate';
+import addButton from '../../images/addButton.png';
+import searchButton from '../../images/searchButton.png';
+import trashButton from '../../images/trash.png';
+import editButton from '../../images/edit.png';
+import topArrow from '../../images/topArrow.png';
+import downArrow from '../../images/downArrow.png';
 //https://akademija.teltonika.lt/api1/
 
 function Countries( {history, countryToView} ) {
@@ -41,32 +41,45 @@ function Countries( {history, countryToView} ) {
         let dates = [];
         const fetchMoreData = async () => {
             let moreResult;
-            let update = true;
-            while (update) {
+            let moreResultDates;
+            let updatePages = true;
+            let updateDates = true;
+            while (updatePages) {
                 moreResult = await axios.get(
                     `https://akademija.teltonika.lt/api1/countries?page=${counter + 1}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
                 );
+                // counts pages
+                if (await moreResult.data.count > 0) {
+                    counter += 1;
+                } else {
+                    updatePages = false;
+                }
+                //---------------------------------
+            }
+            setPageCount(counter);
+            counter = 0;
+            while (updateDates) {
                 // gets all possible creation dates
                 if (isDatesAdded === false) {
+                    moreResultDates = await axios.get(
+                        `https://akademija.teltonika.lt/api1/countries?page=${counter + 1}`,
+                    );
                     // eslint-disable-next-line no-loop-func
-                    [...moreResult.data.countires].forEach((country) => {
+                    [...moreResultDates.data.countires].forEach((country) => {
                         let date = country.created_at;
                         date = date.substr(0, date.indexOf(' '));
                         if (dates.includes(date) === false) {
                             dates.push(date);
                         }
                     });
-                }
-                //---------------------------------
-                // counts pages
-                if (await moreResult.data.count > 0) {
-                    counter += 1;
-                } else {
-                    update = false;
-                }
-                //---------------------------------
+                    if (await moreResultDates.data.count > 0) {
+                        counter += 1;
+                    } else {
+                        updateDates = false;
+                    }
+                } else updateDates = false;
             }
-            setPageCount(counter);
+            
             if (isDatesAdded === false) {
                 dates = dates.sort();
                 setCreationDates(dates);
@@ -79,10 +92,6 @@ function Countries( {history, countryToView} ) {
         fetchMoreData();
     }, [needsUpdate]);
 
-    const handleRedirect = (page) => {
-        history.push(page);
-    }
-
     const handleDelete = (id) => {
         let caught = false;
         const fetchData = async () => {
@@ -92,6 +101,7 @@ function Countries( {history, countryToView} ) {
             if(caught === false && await result.status === 200) {
                 alert(result.data.message);
 
+                //checks if the deleted country was last in the page, if yes resets to main page
                 const moreResult = await axios.get(
                     `https://akademija.teltonika.lt/api1/countries?page=${currentPage}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
                 );
@@ -108,6 +118,9 @@ function Countries( {history, countryToView} ) {
         fetchData();
     }
 
+    const handleRedirect = (page) => {
+        history.push(page);
+    }
     const nextPage = (nr) => {
         setCurrentPage(nr);
         setNeedsUpdate(true);
@@ -124,6 +137,7 @@ function Countries( {history, countryToView} ) {
                     <img src={addButton} alt="Add Button" className="add-button"/>
                 </a>
             </div>
+
             <div className="Page__SearchNav flex-row">
                 <div className="Page__SearchNav__inputWrapper flex-row rectangle">
                     <input className="Page__SearchNav__inputWrapper__input" type="text" value={searchTextNotConfirmed} onChange={ (e) => setSearchTextNotConfirmed(e.target.value) }/>
@@ -143,7 +157,6 @@ function Countries( {history, countryToView} ) {
                         }
                     </select>
                 </div>
-                
             </div>
 
             <div className="Page__CountriesContainer rectangle">

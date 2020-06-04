@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Header from './pages/Header';
-import Countries from './pages/Countries';
-import CountryView from './pages/CountryView';
+import Countries from './pages/CountryPages/Countries';
+import Cities from './pages/CityPages/Cities';
 
 export default function App() {
   const [countryID, setCountryID] = useState(0);
@@ -13,7 +13,7 @@ export default function App() {
         <Header />
         <Switch>
           <Route path="/" exact component={() => <Countries countryToView={handleSetCountry}/>}/>
-          <Route path="/CountryView" component={() => <CountryView countryID={countryID} countryName={countryName}/>}/>
+          <Route path="/CountryView" component={() => <Cities countryID={countryID} countryName={countryName}/>}/>
         </Switch>
       </div>
     </Router>

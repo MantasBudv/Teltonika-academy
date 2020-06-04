@@ -3,16 +3,16 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 import AddCity from './AddCity';
 import EditCity from './EditCity';
-import Paginate from './Paginate';
-import addButton from '../images/addButton.png';
-import searchButton from '../images/searchButton.png';
-import trashButton from '../images/trash.png';
-import editButton from '../images/edit.png';
-import topArrow from '../images/topArrow.png';
-import downArrow from '../images/downArrow.png';
+import Paginate from '../Paginate';
+import addButton from '../../images/addButton.png';
+import searchButton from '../../images/searchButton.png';
+import trashButton from '../../images/trash.png';
+import editButton from '../../images/edit.png';
+import topArrow from '../../images/topArrow.png';
+import downArrow from '../../images/downArrow.png';
 //https://akademija.teltonika.lt/api1/
 
-function CountryView( {history, countryID, countryName} ) {
+function Cities( {history, countryID, countryName} ) {
     const [cities, setCities] = useState([]);
     const [creationDates, setCreationDates] = useState([]);
     const [isDatesAdded, setIsDatesAdded] = useState(false);
@@ -40,32 +40,44 @@ function CountryView( {history, countryID, countryName} ) {
         let dates = [];
         const fetchMoreData = async () => {
             let moreResult;
-            let update = true;
-            while (update) {
+            let moreResultDates;
+            let updatePages = true;
+            let updateDates = true;
+            while (updatePages) {
                 moreResult = await axios.get(
                     `https://akademija.teltonika.lt/api1/cities/${countryID}?page=${counter + 1}&order=${orderBy}${searchText !== '' ? '&text=' + searchText : ''}${dateFilter !== 'DATE FILTER' ? '&date=' + dateFilter : ''}`,
                 );
+                // counts pages
+                if (await moreResult.data.length > 0) {
+                    counter += 1;
+                } else {
+                    updatePages = false;
+                }
+                //---------------------------------
+            }
+            setPageCount(counter);
+            counter = 0;
+            while (updateDates) {
                 // gets all possible creation dates
                 if (isDatesAdded === false) {
+                    moreResultDates = await axios.get(
+                        `https://akademija.teltonika.lt/api1/cities/${countryID}?page=${counter + 1}`,
+                    );
                     // eslint-disable-next-line no-loop-func
-                    moreResult.data.forEach((city) => {
+                    moreResultDates.data.forEach((city) => {
                         let date = city.created_at;
                         date = date.substr(0, date.indexOf(' '));
                         if (dates.includes(date) === false) {
                             dates.push(date);
                         }
                     });
-                }
-                //---------------------------------
-                // counts pages
-                if (await moreResult.data.length > 0) {
-                    counter += 1;
-                } else {
-                    update = false;
-                }
-                //---------------------------------
+                    if (await moreResultDates.data.length > 0) {
+                        counter += 1;
+                    } else {
+                        updateDates = false;
+                    }
+                } else updateDates = false;
             }
-            setPageCount(counter);
             if (isDatesAdded === false) {
                 dates = dates.sort();
                 setCreationDates(dates);
@@ -77,10 +89,6 @@ function CountryView( {history, countryID, countryName} ) {
         setNeedsUpdate(false);
         fetchMoreData();
     }, [needsUpdate]);
-
-    const handleRedirect = (page) => {
-        history.push(page);
-    }
 
     const handleDelete = (id) => {
         let caught = false;
@@ -210,4 +218,4 @@ function CountryView( {history, countryID, countryName} ) {
         </div>
         );
     }
-export default withRouter(CountryView);
+export default withRouter(Cities);

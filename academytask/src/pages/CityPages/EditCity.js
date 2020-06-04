@@ -3,7 +3,7 @@ import axios from 'axios';
 //https://akademija.teltonika.lt/api1/
 
 function EditCity({setNeedsEdit, setNeedsUpdate, editID, countryID}) {
-    const [name, setName] = useState(''); 
+    const [name, setName] = useState('');
     const [area, setArea] = useState(0); 
     const [population, setPopulation] = useState(0);
     const [postcode, setPostcode] = useState('');
@@ -16,6 +16,7 @@ function EditCity({setNeedsEdit, setNeedsUpdate, editID, countryID}) {
                 const result = await axios.get(
                     `https://akademija.teltonika.lt/api1/cities/${countryID}?page=${counter + 1}`,
                 );
+                // searches for a city with same id
                 // eslint-disable-next-line no-loop-func
                 result.data.forEach( (e) => {
                     if (e.id === editID) {
